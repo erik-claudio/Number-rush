@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Number Rush: math practice</title>
+<meta name="description" content="Fast math fact practice and Make 24 puzzles with points and stickers.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧮</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#EEF3FB; --grid:#DCE5F3; --ink:#1B2A4A; --soft:#56658A; --card:#FFFFFF;
+  --line:#1B2A4A; --shadow:#1B2A4A; --on-color:#1B2A4A;
+  --sun:#FFC93C; --tomato:#FF8A8F; --mint:#5DD6AC; --grape:#B49CF5; --sky:#8CC0FF;
+  --font:"Fredoka",ui-rounded,"SF Pro Rounded","Arial Rounded MT Bold",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){
+  :root{--paper:#121B30;--grid:#1B2742;--ink:#EEF2FA;--soft:#A3B0CC;--card:#1F2C4A;--line:#05091A;--shadow:#05091A;color-scheme:dark}
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{
+  font-family:var(--font);color:var(--ink);background-color:var(--paper);
+  background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:28px 28px;
+  padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);
+  -webkit-tap-highlight-color:transparent;
+}
+#app{max-width:680px;margin:0 auto;padding:16px 18px 48px}
+button{font:inherit;color:inherit;cursor:pointer;touch-action:manipulation}
+:focus-visible{outline:3px solid #3D8BFD;outline-offset:3px}
+p{line-height:1.45;margin:0 0 12px}
+h1{font-size:2rem;line-height:1.1;margin:0 0 14px;font-weight:700;letter-spacing:-.015em}
+.h2{font-size:1.1rem;font-weight:600;margin:24px 0 10px}
+.muted{color:var(--soft)}
+.small{font-size:.9rem}
+
+/* The chunky stamped tile is the whole visual language */
+.tile{background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:16px;box-shadow:5px 5px 0 var(--shadow);transition:transform .08s,box-shadow .08s}
+button.tile:active{transform:translate(3px,3px);box-shadow:2px 2px 0 var(--shadow)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button.tile:disabled:active{transform:none;box-shadow:5px 5px 0 var(--shadow)}
+.sun{background:var(--sun);color:var(--on-color)}
+.grape{background:var(--grape);color:var(--on-color)}
+.mint{background:var(--mint);color:var(--on-color)}
+.sky{background:var(--sky);color:var(--on-color)}
+
+/* Header */
+.top{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.35rem;letter-spacing:-.01em;margin-right:auto}
+.mark{display:inline-grid;place-items:center;width:38px;height:38px;background:var(--sun);color:var(--on-color);border:3px solid var(--line);border-radius:10px;box-shadow:3px 3px 0 var(--shadow);font-size:1rem;transform:rotate(-6deg)}
+.chip{padding:8px 14px;font-size:.95rem;font-weight:500;border-radius:999px;box-shadow:3px 3px 0 var(--shadow);white-space:nowrap}
+.back{width:44px;height:44px;display:grid;place-items:center;font-size:1.2rem;padding:0;border-radius:12px;box-shadow:3px 3px 0 var(--shadow);flex:none}
+
+/* Home */
+.goal-top{display:flex;justify-content:space-between;gap:12px;font-weight:500;margin-bottom:8px}
+.bar{height:18px;border:3px solid var(--line);border-radius:999px;background:var(--card);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--mint);transition:width .6s ease}
+.goal p{margin-top:8px}
+.menu{display:grid;gap:16px;margin-top:24px}
+.mode{display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:20px 22px;min-height:124px;width:100%}
+.mode b{display:block;font-size:1.5rem;font-weight:700;margin-bottom:4px}
+.mode-txt span{font-size:1rem}
+.glyph{font-size:2.6rem;font-weight:700;line-height:1;background:var(--card);color:var(--ink);border:3px solid var(--line);border-radius:12px;padding:10px 14px;transform:rotate(4deg);flex:none}
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.mode.small{min-height:96px;flex-direction:column;align-items:flex-start;justify-content:center;gap:2px}
+.mode.small b{font-size:1.25rem;margin:0}
+
+/* Setup */
+.seg{display:grid;grid-template-columns:repeat(5,1fr);gap:10px}
+.seg button{padding:14px 0;font-size:1.6rem;font-weight:600}
+.seg button.on,.lvl.on,.op.on{background:var(--sun);color:var(--on-color)}
+.seg.mini{grid-template-columns:repeat(2,auto)}
+.seg.mini button{padding:8px 14px;font-size:1rem;box-shadow:3px 3px 0 var(--shadow)}
+.levels{display:grid;gap:10px}
+.lvl{display:flex;align-items:center;gap:14px;padding:12px 16px;text-align:left;font-size:1.05rem;width:100%}
+.lvl b{display:grid;place-items:center;width:34px;height:34px;border:3px solid var(--line);border-radius:50%;font-size:1rem;flex:none;background:var(--card);color:var(--ink)}
+.seg.mode2{grid-template-columns:1fr 1fr;margin-bottom:4px}
+.seg.mode2 button{font-size:1.1rem;padding:12px 0}
+.seg.grades button{font-size:1.15rem}
+.lvl small{display:block;font-size:.85rem;opacity:.7;margin-top:2px}
+.chips{display:flex;flex-wrap:wrap;gap:10px}
+.chips button{min-width:56px;padding:8px 10px;font-size:1.1rem;font-weight:600;box-shadow:3px 3px 0 var(--shadow)}
+.chips button.on{background:var(--sun);color:var(--on-color)}
+.btn{padding:12px 18px;font-size:1.1rem;font-weight:600}
+.btn.wide{width:100%;padding:16px;font-size:1.3rem;margin-top:10px}
+
+/* Sprint */
+.hud{display:flex;align-items:center;gap:10px;margin-bottom:18px}
+.hud-stat{flex:1;text-align:center}
+.hud-stat span{display:block;font-size:1.9rem;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.hud-stat small{color:var(--soft);font-size:.85rem}
+#time.low{color:#E2434B}
+.problem{text-align:center;padding:28px 12px 22px}
+.eq{font-size:clamp(2.4rem,11vw,4.2rem);font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+.eq.long{font-size:clamp(1.7rem,7.5vw,3rem)}
+.ans{margin:16px auto 0;min-width:3ch;display:inline-block;font-size:clamp(2.2rem,10vw,3.6rem);font-weight:600;border-bottom:4px solid var(--line);padding:0 12px;line-height:1.2;font-variant-numeric:tabular-nums}
+.ans.empty{color:var(--soft)}
+.problem.ok{animation:ok .45s}
+.problem.bad{animation:bad .45s}
+@keyframes ok{0%{background:var(--mint)}100%{background:var(--card)}}
+@keyframes bad{0%{background:var(--tomato);transform:translateX(-6px)}25%{transform:translateX(6px)}50%{transform:translateX(-3px)}100%{background:var(--card);transform:none}}
+.fb{text-align:center;min-height:1.5em;font-weight:500;margin:12px 0}
+.keypad{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:420px;margin:0 auto}
+.key{height:64px;font-size:1.7rem;font-weight:600}
+.key.go{background:var(--mint);color:var(--on-color)}
+.key.alt{background:var(--paper)}
+
+/* Results */
+.result{text-align:center;padding:24px 18px}
+.stars{font-size:2.6rem;letter-spacing:.12em}
+.stars span{color:transparent;-webkit-text-stroke:2px var(--soft)}
+.stars .lit{color:var(--sun);-webkit-text-stroke:2px var(--line)}
+.big-num{font-size:5rem;font-weight:700;line-height:1;margin-top:4px}
+.minis{display:grid;grid-template-columns:repeat(2,1fr);gap:14px 12px;margin:20px 0 4px;text-align:left}
+.minis div{border-top:3px solid var(--grid);padding-top:8px}
+.minis b{display:block;font-size:1.5rem}
+.minis span{color:var(--soft);font-size:.9rem}
+.new-stickers{margin-top:18px}
+.row-btns{display:flex;gap:12px;margin-top:18px}
+.row-btns .btn{flex:1}
+
+/* Make 24 */
+.m24-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.m24-head h1{margin:0}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:16px;max-width:400px;margin:18px auto}
+.cards.c1{grid-template-columns:minmax(0,190px);justify-content:center}
+.card{aspect-ratio:1/1;display:grid;place-items:center;font-size:clamp(2.6rem,13vw,4rem);font-weight:700;border-radius:20px;font-variant-numeric:tabular-nums}
+.card.sel{background:var(--sun);color:var(--on-color);transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--shadow)}
+.card.win{background:var(--mint);color:var(--on-color);opacity:1}
+.frac{font-size:.62em}
+.ops4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;max-width:400px;margin:0 auto}
+.op{height:60px;font-size:1.8rem;font-weight:600}
+.acts{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
+.hint{text-align:center;font-weight:500;font-size:1.15rem;margin-top:16px}
+.winbox{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;max-width:400px;margin:0 auto;background:var(--mint);color:var(--on-color)}
+.winbox b{font-size:2rem}
+.center{text-align:center}
+
+/* Stickers */
+.stickers{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:16px}
+.sticker{padding:16px 12px;text-align:center;border-radius:20px}
+.sticker:nth-child(odd){transform:rotate(-2deg)}
+.sticker:nth-child(even){transform:rotate(1.5deg)}
+.sticker .em{font-size:2.6rem;display:block;margin-bottom:6px;line-height:1.1}
+.sticker.locked{background:transparent;border-style:dashed;box-shadow:none}
+.sticker.locked .em{filter:grayscale(1);opacity:.3}
+.sticker b{display:block;margin-bottom:2px}
+.sticker small{color:var(--soft);font-size:.85rem;line-height:1.3;display:block}
+
+/* Stats */
+.panel{padding:16px 18px;margin-bottom:20px}
+.panel h2{margin:0 0 10px;font-size:1.15rem}
+table{width:100%;border-collapse:collapse;font-size:1.05rem}
+th,td{padding:10px 6px;text-align:right;border-bottom:2px solid var(--grid)}
+th:first-child,td:first-child{text-align:left}
+thead th{font-weight:500;color:var(--soft);font-size:.9rem}
+tbody th{font-weight:500}
+.totals{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.totals b{display:block;font-size:1.8rem}
+.totals span{color:var(--soft);font-size:.9rem}
+.bests{margin:0;padding:0;list-style:none}
+.bests li{display:flex;justify-content:space-between;padding:8px 0;border-bottom:2px solid var(--grid)}
+
+/* Profiles */
+.brand.big{font-size:1.8rem;margin:24px 0 30px}
+.plist{display:grid;gap:12px;margin-bottom:26px}
+.prow{display:flex;gap:8px;align-items:center}
+.pbtn{flex:1;display:flex;justify-content:space-between;gap:12px;padding:14px 18px;font-size:1.2rem;font-weight:600;text-align:left}
+.pbtn .muted{font-weight:400}
+.del{background:none;border:none;color:var(--soft);text-decoration:underline;padding:8px;font-size:.9rem}
+.addp label{display:block;font-weight:600;margin-bottom:8px}
+.row{display:flex;gap:10px}
+input{flex:1;font:inherit;font-size:1.2rem;padding:12px 14px;border:3px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);min-width:0}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);padding:12px 18px;font-weight:600;z-index:10;animation:pop .3s;white-space:nowrap;background:var(--sun);color:var(--on-color)}
+@keyframes pop{from{transform:translate(-50%,20px);opacity:0}}
+@media (max-width:420px){
+  .glyph{font-size:2rem;padding:8px 10px}
+  .seg button{font-size:1.3rem}
+  .chip{padding:6px 10px;font-size:.85rem}
+  .brand{font-size:1.15rem}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<main id="app"></main>
+<noscript><p style="padding:20px">Number Rush needs JavaScript turned on.</p></noscript>
+<script>
+"use strict";
+
+/* ---------- Settings you can tweak ---------- */
+const SPRINT_SECONDS = 60;
+const DAILY_GOAL = 100;          // points per day
+const STAR_STEPS = [10, 20, 30]; // correct answers for 1, 2, 3 stars
+
+/* ---------- Storage (per device, per player) ---------- */
+const STORE_KEY = "numberrush:v1";
+let store = load();
+function load() {
+  try { const raw = localStorage.getItem(STORE_KEY); if (raw) return JSON.parse(raw); } catch (e) {}
+  return { profiles: {}, current: null };
+}
+function save() { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch (e) {} }
+function newProfile(name) {
+  return {
+    name, points: 0, today: { date: "", pts: 0 }, lastDay: "", dayStreak: 0,
+    stats: { add: { c: 0, w: 0 }, sub: { c: 0, w: 0 }, mul: { c: 0, w: 0 }, div: { c: 0, w: 0 } },
+    best: {}, sprints: 0, maxSprint: 0, bestStreak: 0, opsDone: {}, perfect: 0, mulMaster: false,
+    m24: 0, m24HardClean: 0, stickers: {}
+  };
+}
+const me = () => store.profiles[store.current];
+const fmtDate = d => d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+const todayStr = () => fmtDate(new Date());
+const yesterdayStr = () => { const d = new Date(); d.setDate(d.getDate() - 1); return fmtDate(d); };
+function addPoints(n) {
+  const p = me(), t = todayStr();
+  if (p.today.date !== t) p.today = { date: t, pts: 0 };
+  p.today.pts += n; p.points += n;
+  if (p.lastDay !== t) { p.dayStreak = p.lastDay === yesterdayStr() ? p.dayStreak + 1 : 1; p.lastDay = t; }
+}
+
+/* ---------- Helpers ---------- */
+const app = document.getElementById("app");
+const R = (a, b) => a + Math.floor(Math.random() * (b - a + 1));
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const OPS = { add: "+", sub: "−", mul: "×", div: "÷" };
+const NAMES = { add: "Addition", sub: "Subtraction", mul: "Multiplication", div: "Division", mix: "Mix" };
+function toast(html) {
+  const el = document.createElement("div");
+  el.className = "toast tile"; el.setAttribute("role", "status"); el.innerHTML = html;
+  document.body.appendChild(el); setTimeout(() => el.remove(), 3200);
+}
+
+/* ---------- Stickers ---------- */
+const STICKERS = [
+  { id: "liftoff", e: "🚀", name: "Liftoff", desc: "Finish your first sprint", ok: p => p.sprints >= 1 },
+  { id: "quick", e: "⚡", name: "Quick hands", desc: "Get 20 right in one sprint", ok: p => p.maxSprint >= 20 },
+  { id: "bullseye", e: "🎯", name: "Bullseye", desc: "10 or more right with no misses", ok: p => p.perfect >= 1 },
+  { id: "fire", e: "🔥", name: "On fire", desc: "15 right in a row", ok: p => p.bestStreak >= 15 },
+  { id: "bank", e: "🪙", name: "Piggy bank", desc: "Earn 500 points", ok: p => p.points >= 500 },
+  { id: "vault", e: "💰", name: "Vault", desc: "Earn 2,500 points", ok: p => p.points >= 2500 },
+  { id: "first24", e: "🃏", name: "First 24", desc: "Solve a Make 24 puzzle", ok: p => p.m24 >= 1 },
+  { id: "puzzler", e: "🧩", name: "Puzzler", desc: "Solve 10 Make 24 puzzles", ok: p => p.m24 >= 10 },
+  { id: "climber", e: "🧗", name: "Climber", desc: "Solve a hard puzzle with no hint", ok: p => p.m24HardClean >= 1 },
+  { id: "times", e: "✖️", name: "Times tables", desc: "25 right in one sprint of all facts to 10 × 10", ok: p => p.mulMaster },
+  { id: "habit", e: "📅", name: "Habit", desc: "Play 3 days in a row", ok: p => p.dayStreak >= 3 },
+  { id: "allround", e: "🌈", name: "All-rounder", desc: "Finish a sprint in +, −, × and ÷", ok: p => ["add", "sub", "mul", "div"].every(o => p.opsDone[o]) }
+];
+function checkStickers() {
+  const p = me(), out = [];
+  for (const s of STICKERS) if (!p.stickers[s.id] && s.ok(p)) { p.stickers[s.id] = todayStr(); out.push(s); }
+  return out;
+}
+
+/* ---------- Problem generators ---------- */
+const P = (op, a, b) => ({ op, a, b, ans: op === "add" ? a + b : op === "sub" ? a - b : op === "mul" ? a * b : a / b });
+const mulP = (x, y) => (Math.random() < 0.5 ? P("mul", x, y) : P("mul", y, x));
+const divP = (divisor, quotient) => P("div", divisor * quotient, divisor);
+const pick = arr => arr[R(0, arr.length - 1)];
+// A factor in [lo, hi] where 0 and 1 show up far less often, since they're too easy to teach much
+function fact(lo, hi) { let n; do { n = R(lo, hi); } while (n <= 1 && hi > 2 && Math.random() < 0.75); return n; }
+const factMul = t => (t ? mulP(pick(t), fact(0, 10)) : mulP(fact(0, 10), fact(0, 10)));
+const factDiv = t => (t ? divP(pick(t), fact(0, 10)) : divP(fact(1, 10), fact(0, 10)));
+
+/* Mode 1: practice by difficulty */
+const LEVELS = {
+  add: ["Up to 5 + 5", "Up to 10 + 10", "2-digit + 1-digit", "2-digit + 2-digit", "3-digit + 2-digit"],
+  sub: ["Within 5", "Within 10", "2-digit − 1-digit", "2-digit − 2-digit", "3-digit − 2-digit"],
+  mul: ["Up to 5 × 5", "Up to 10 × 5", "Up to 10 × 10", "Up to 12 × 12", "2-digit × 1-digit"],
+  div: ["Answers up to 5", "Divide by up to 5", "Divide by up to 10", "Divide by up to 12", "2-digit answers"],
+  mix: ["Easiest", "Easy", "Medium", "Hard", "Hardest"]
+};
+function gen(op, lvl) {
+  if (op === "mix") op = pick(["add", "sub", "mul", "div"]);
+  if (op === "add" || op === "sub") {
+    const r = [[0, 5, 0, 5], [0, 10, 0, 10], [10, 99, 1, 9], [10, 99, 10, 99], [100, 999, 10, 99]][lvl - 1];
+    let a = R(r[0], r[1]), b = R(r[2], r[3]);
+    if (op === "add") return Math.random() < 0.5 ? P("add", a, b) : P("add", b, a);
+    if (b > a) [a, b] = [b, a];
+    return P("sub", a, b);
+  }
+  const m = [[5, 5], [10, 5], [10, 10], [12, 12]][lvl - 1];
+  if (op === "mul") return lvl === 5 ? mulP(R(10, 99), R(2, 9)) : mulP(fact(0, m[0]), fact(0, m[1]));
+  return lvl === 5 ? divP(R(2, 9), R(10, 99)) : divP(fact(1, m[1]), fact(0, m[0]));
+}
+
+/* Mode 2: practice by grade, following the Texas Essential Knowledge and Skills (TEKS) for math */
+const SKILLS = {
+  "g1-add":    { grade: 1, teks: "1.3D", name: "Add within 20", pts: 1, op: "add", make: () => { const a = R(1, 19); return P("add", a, R(1, 20 - a)); } },
+  "g1-sub":    { grade: 1, teks: "1.3D", name: "Subtract within 20", pts: 1, op: "sub", make: () => { const a = R(2, 20); return P("sub", a, R(1, a)); } },
+  "g1-mix":    { grade: 1, teks: "1.3D", name: "Add and subtract within 20", pts: 1, make: () => SKILLS[pick(["g1-add", "g1-sub"])].make() },
+  "g2-facts":  { grade: 2, teks: "2.4A", name: "Fast facts within 20", pts: 1, make: () => SKILLS[pick(["g1-add", "g1-sub"])].make() },
+  "g2-add":    { grade: 2, teks: "2.4B", name: "Add two-digit numbers", pts: 2, op: "add", make: () => P("add", R(10, 99), R(10, 99)) },
+  "g2-sub":    { grade: 2, teks: "2.4B", name: "Subtract two-digit numbers", pts: 2, op: "sub", make: () => { const a = R(20, 99); return P("sub", a, R(10, a)); } },
+  "g2-1000":   { grade: 2, teks: "2.4C", name: "Add and subtract within 1,000", pts: 3, make: () => { if (Math.random() < 0.5) { const a = R(100, 899); return P("add", a, R(10, 999 - a)); } const a = R(100, 999); return P("sub", a, R(10, a)); } },
+  "g3-mul":    { grade: 3, teks: "3.4F", name: "Multiplication facts to 10 × 10", pts: 2, op: "mul", tables: true, make: t => factMul(t) },
+  "g3-div":    { grade: 3, teks: "3.4F", name: "Division facts to 100 ÷ 10", pts: 2, op: "div", tables: true, make: t => factDiv(t) },
+  "g3-fam":    { grade: 3, teks: "3.4J", name: "Mixed × and ÷ fact families", pts: 2, tables: true, make: t => (Math.random() < 0.5 ? factMul(t) : factDiv(t)) },
+  "g3-2x1":    { grade: 3, teks: "3.4G", name: "2-digit × 1-digit", pts: 3, op: "mul", make: () => mulP(R(10, 99), R(2, 9)) },
+  "g3-addsub": { grade: 3, teks: "3.4A", name: "3-digit add and subtract", pts: 3, make: () => { if (Math.random() < 0.5) { const a = R(100, 899); return P("add", a, R(100, 999 - a)); } const a = R(200, 999); return P("sub", a, R(100, a)); } },
+  "g4-x10":    { grade: 4, teks: "4.4B", name: "Multiply by 10 and 100", pts: 2, op: "mul", make: () => mulP(R(2, 99), pick([10, 100])) },
+  "g4-sq":     { grade: 4, teks: "4.4C", name: "Perfect squares to 15 × 15", pts: 3, op: "mul", make: () => { const n = R(2, 15); return P("mul", n, n); } },
+  "g4-2x2":    { grade: 4, teks: "4.4D", name: "2-digit × 2-digit", pts: 4, op: "mul", make: () => P("mul", R(11, 99), R(11, 99)) },
+  "g4-4x1":    { grade: 4, teks: "4.4D", name: "Up to 4-digit × 1-digit", pts: 4, op: "mul", make: () => mulP(R(100, 9999), R(2, 9)) },
+  "g4-div":    { grade: 4, teks: "4.4F", name: "Divide up to 4 digits by 1 digit", pts: 4, op: "div", make: () => { const d = R(2, 9); return divP(d, R(12, Math.floor(9999 / d))); } },
+  "g4-big":    { grade: 4, teks: "4.4A", name: "Add and subtract big numbers", pts: 4, make: () => { const a = R(1000, 49999), b = R(1000, 49999); return Math.random() < 0.5 ? P("add", a, b) : P("sub", Math.max(a, b), Math.min(a, b)); } },
+  "g5-3x2":    { grade: 5, teks: "5.3B", name: "3-digit × 2-digit", pts: 5, op: "mul", make: () => P("mul", R(100, 999), R(11, 99)) },
+  "g5-div":    { grade: 5, teks: "5.3C", name: "Divide by a 2-digit number", pts: 5, op: "div", make: () => { const d = R(11, 99); return divP(d, R(10, Math.floor(9999 / d))); } },
+  "g5-mix":    { grade: 5, teks: "5.3B, 5.3C", name: "Mixed multi-digit review", pts: 5, make: () => SKILLS[pick(["g4-2x2", "g4-div", "g5-3x2", "g5-div"])].make() }
+};
+const firstSkill = g => Object.keys(SKILLS).find(id => SKILLS[id].grade === g);
+// Harder skills need scratch paper, so they get longer sprints and lower star targets
+const timing = pts => (pts >= 4 ? { secs: 180, stars: [4, 8, 12] } : pts === 3 ? { secs: 120, stars: [8, 16, 24] } : { secs: SPRINT_SECONDS, stars: STAR_STEPS });
+
+function S() {
+  const p = me();
+  p.setup = Object.assign({ mode: "grade", op: "mul", lvl: 1, grade: 3, skill: "g3-mul", tables: [] }, p.setup || {});
+  if (!SKILLS[p.setup.skill] || SKILLS[p.setup.skill].grade !== p.setup.grade) p.setup.skill = firstSkill(p.setup.grade);
+  return p.setup;
+}
+function sprintConfig() {
+  const s = S();
+  if (s.mode === "level") {
+    return { key: s.op + "-" + s.lvl, label: `${NAMES[s.op]}, level ${s.lvl}`, pts: s.lvl, op: s.op === "mix" ? null : s.op,
+             make: () => gen(s.op, s.lvl), mulFacts: s.op === "mul" && s.lvl >= 3, secs: SPRINT_SECONDS, stars: STAR_STEPS };
+  }
+  const k = SKILLS[s.skill];
+  const t = k.tables && s.tables.length ? [...s.tables].sort((a, b) => a - b) : null;
+  return { key: s.skill + (t ? ":" + t.join(".") : ""), label: `Grade ${k.grade}: ${k.name}${t ? ` (${t.join(", ")}s)` : ""}`,
+           pts: k.pts, op: k.op || null, make: () => k.make(t), mulFacts: s.skill === "g3-mul" && !t, ...timing(k.pts) };
+}
+const durationText = secs => (secs === 60 ? "1 minute" : `${secs / 60} minutes`);
+
+/* ---------- Fractions + Make 24 solver ---------- */
+const gcd = (a, b) => { a = Math.abs(a); b = Math.abs(b); while (b) [a, b] = [b, a % b]; return a || 1; };
+function F(n, d = 1) { if (d < 0) { n = -n; d = -d; } const g = gcd(n, d); return { n: n / g, d: d / g }; }
+const fadd = (a, b) => F(a.n * b.d + b.n * a.d, a.d * b.d);
+const fsub = (a, b) => F(a.n * b.d - b.n * a.d, a.d * b.d);
+const fmul = (a, b) => F(a.n * b.n, a.d * b.d);
+const fdiv = (a, b) => F(a.n * b.d, a.d * b.n);
+function solve(items) {
+  if (items.length === 1) return items[0].f.n === 24 && items[0].f.d === 1 ? items[0].e : null;
+  for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
+    const a = items[i], b = items[j], rest = items.filter((_, k) => k !== i && k !== j);
+    const c = [
+      [fadd(a.f, b.f), `(${a.e} + ${b.e})`], [fmul(a.f, b.f), `(${a.e} × ${b.e})`],
+      [fsub(a.f, b.f), `(${a.e} − ${b.e})`], [fsub(b.f, a.f), `(${b.e} − ${a.e})`]
+    ];
+    if (b.f.n !== 0) c.push([fdiv(a.f, b.f), `(${a.e} ÷ ${b.e})`]);
+    if (a.f.n !== 0) c.push([fdiv(b.f, a.f), `(${b.e} ÷ ${a.e})`]);
+    for (const [f, e] of c) { const r = solve([...rest, { f, e }]); if (r) return r; }
+  }
+  return null;
+}
+const fracText = c => (c.n < 0 ? "−" : "") + (c.d === 1 ? Math.abs(c.n) : Math.abs(c.n) + "/" + c.d);
+const fracHTML = c => c.d === 1 ? fracText(c) : `<span class="frac">${fracText(c)}</span>`;
+
+/* ---------- Router ---------- */
+let screen = "home";
+let sprint = null;
+let m24 = null;
+let uid = 1;
+
+function go(s) {
+  if (sprint && sprint.timer && s !== "sprint") { clearInterval(sprint.timer); sprint.timer = null; }
+  screen = s; render(); window.scrollTo(0, 0);
+}
+function render() {
+  if (!store.current || !me()) screen = "profiles";
+  ({ home: renderHome, profiles: renderProfiles, setup: renderSetup, sprint: renderSprint,
+     results: renderResults, m24: renderM24, stickers: renderStickers, stats: renderStats })[screen]();
+}
+function header(back) {
+  const p = me();
+  return `<header class="top">
+    ${back ? `<button class="tile back" data-go="${back}" aria-label="Back">←</button>` : ""}
+    <div class="brand"><span class="mark" aria-hidden="true">24</span>Number Rush</div>
+    <button class="tile chip" data-go="profiles" aria-label="Switch player">${esc(p.name)}, <b>${p.points.toLocaleString()}</b> pts</button>
+  </header>`;
+}
+
+/* ---------- Screens ---------- */
+function renderProfiles() {
+  const names = Object.keys(store.profiles);
+  app.innerHTML = `
+    <div class="brand big"><span class="mark" aria-hidden="true">24</span>Number Rush</div>
+    <h1>Who's playing?</h1>
+    ${names.length ? `<div class="plist">${names.map(n => `
+      <div class="prow">
+        <button class="tile pbtn" data-act="pick" data-name="${esc(n)}"><span>${esc(n)}</span><span class="muted">${store.profiles[n].points.toLocaleString()} pts</span></button>
+        <button class="del" data-act="delp" data-name="${esc(n)}" aria-label="Remove ${esc(n)}">Remove</button>
+      </div>`).join("")}</div>` : ""}
+    <form id="addp" class="addp">
+      <label for="pname">${names.length ? "Add a player" : "Type your name to start"}</label>
+      <div class="row"><input id="pname" maxlength="20" autocomplete="off" placeholder="Your name"><button class="tile btn sun" type="submit">Start</button></div>
+    </form>`;
+  document.getElementById("addp").addEventListener("submit", e => {
+    e.preventDefault();
+    const v = document.getElementById("pname").value.trim();
+    if (!v) return;
+    if (!store.profiles[v]) store.profiles[v] = newProfile(v);
+    store.current = v; save(); go("home");
+  });
+}
+
+function renderHome() {
+  const p = me(), t = todayStr();
+  const today = p.today.date === t ? p.today.pts : 0;
+  const pct = Math.min(100, (today / DAILY_GOAL) * 100);
+  const streak = p.lastDay === t || p.lastDay === yesterdayStr() ? p.dayStreak : 0;
+  const got = Object.keys(p.stickers).length;
+  app.innerHTML = header() + `
+    <h1>Hi, ${esc(p.name)}</h1>
+    <section class="goal" aria-label="Today's goal">
+      <div class="goal-top"><span>Today's goal</span><span><b>${today}</b> of ${DAILY_GOAL} points</span></div>
+      <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="${DAILY_GOAL}" aria-valuenow="${Math.min(today, DAILY_GOAL)}"><i style="width:${pct}%"></i></div>
+      <p class="muted">${today >= DAILY_GOAL ? "Goal reached. Nice work." : `${DAILY_GOAL - today} points to go.`}${streak > 1 ? ` You're on a ${streak}-day streak.` : ""}</p>
+    </section>
+    <nav class="menu">
+      <button class="tile mode sun" data-go="setup"><span class="mode-txt"><b>Fact Sprint</b><span>Timed rounds by grade level or difficulty</span></span><span class="glyph" aria-hidden="true">7×8</span></button>
+      <button class="tile mode grape" data-act="m24open"><span class="mode-txt"><b>Make 24</b><span>Combine four numbers to hit 24</span></span><span class="glyph" aria-hidden="true">24</span></button>
+      <div class="pair">
+        <button class="tile mode small mint" data-go="stickers"><b>Stickers</b><span>${got} of ${STICKERS.length}</span></button>
+        <button class="tile mode small sky" data-go="stats"><b>Stats</b><span>Accuracy and bests</span></button>
+      </div>
+    </nav>`;
+}
+
+function renderSetup() {
+  const p = me(), s = S(), cfg = sprintConfig(), best = p.best[cfg.key] || 0;
+  const on = c => (c ? "on" : "");
+  let body;
+  if (s.mode === "level") {
+    body = `
+    <h2 class="h2">Operation</h2>
+    <div class="seg">${["add", "sub", "mul", "div", "mix"].map(o => `
+      <button class="tile ${on(s.op === o)}" data-act="setop" data-v="${o}" aria-pressed="${s.op === o}" aria-label="${NAMES[o]}">${o === "mix" ? "Mix" : OPS[o]}</button>`).join("")}</div>
+    <h2 class="h2">Level</h2>
+    <div class="levels">${LEVELS[s.op].map((l, i) => `
+      <button class="tile lvl ${on(s.lvl === i + 1)}" data-act="setlvl" data-v="${i + 1}" aria-pressed="${s.lvl === i + 1}"><b>${i + 1}</b><span>${l}</span></button>`).join("")}</div>`;
+  } else {
+    const ords = ["1st", "2nd", "3rd", "4th", "5th"];
+    body = `
+    <h2 class="h2">Grade</h2>
+    <div class="seg grades">${[1, 2, 3, 4, 5].map(g => `
+      <button class="tile ${on(s.grade === g)}" data-act="setgrade" data-v="${g}" aria-pressed="${s.grade === g}" aria-label="Grade ${g}">${ords[g - 1]}</button>`).join("")}</div>
+    <h2 class="h2">Skill</h2>
+    <div class="levels">${Object.keys(SKILLS).filter(id => SKILLS[id].grade === s.grade).map(id => `
+      <button class="tile lvl ${on(s.skill === id)}" data-act="setskill" data-v="${id}" aria-pressed="${s.skill === id}"><span>${SKILLS[id].name}<small>TEKS ${SKILLS[id].teks}</small></span></button>`).join("")}</div>
+    ${SKILLS[s.skill].tables ? `
+    <h2 class="h2">Focus on tables</h2>
+    <div class="chips">
+      <button class="tile ${on(!s.tables.length)}" data-act="table" data-v="all" aria-pressed="${!s.tables.length}">All</button>
+      ${[2, 3, 4, 5, 6, 7, 8, 9, 10].map(n => `<button class="tile ${on(s.tables.includes(n))}" data-act="table" data-v="${n}" aria-pressed="${s.tables.includes(n)}">${n}s</button>`).join("")}
+    </div>
+    <p class="muted small" style="margin-top:10px">Pick one or more tables to practice, or All for every fact from 0 to 10.</p>` : ""}
+    <p class="muted small" style="margin-top:14px">Skills follow the Texas math standards (TEKS) for each grade.</p>`;
+  }
+  app.innerHTML = header("home") + `
+    <h1>Fact Sprint</h1>
+    <div class="seg mode2" role="group" aria-label="Practice by">
+      <button class="tile ${on(s.mode === "level")}" data-act="setmode" data-v="level" aria-pressed="${s.mode === "level"}">Difficulty</button>
+      <button class="tile ${on(s.mode === "grade")}" data-act="setmode" data-v="grade" aria-pressed="${s.mode === "grade"}">Grade level</button>
+    </div>
+    ${body}
+    <p class="muted" style="margin-top:16px">${best ? `Your best here: ${best} correct.` : "No score here yet."} Each sprint lasts ${durationText(cfg.secs)}.</p>
+    <button class="tile btn sun wide" data-act="start">Start sprint</button>`;
+}
+
+function startSprint() {
+  const cfg = sprintConfig();
+  sprint = { cfg, end: Date.now() + cfg.secs * 1000,
+    correct: 0, wrong: 0, streak: 0, best: 0, pts: 0, input: "", prob: null, timer: null };
+  nextProb(); go("sprint");
+  sprint.timer = setInterval(tick, 200);
+}
+function nextProb() {
+  let q, prev = sprint.prob, tries = 0;
+  do { q = sprint.cfg.make(); tries++; }
+  while (prev && tries < 20 && q.op === prev.op && q.a === prev.a && q.b === prev.b);
+  sprint.prob = q; sprint.input = "";
+}
+function renderSprint() {
+  app.innerHTML = `
+    <header class="hud">
+      <button class="tile back" data-act="quit" aria-label="Quit sprint">✕</button>
+      <div class="hud-stat"><span id="time">${sprint.cfg.secs}</span><small>seconds</small></div>
+      <div class="hud-stat"><span id="score">0</span><small>correct</small></div>
+      <div class="hud-stat"><span id="pts">0</span><small>points</small></div>
+    </header>
+    <div class="tile problem" id="prob"><div class="eq" id="eq"></div><div class="ans" id="ans"></div></div>
+    <p class="fb" id="fb" aria-live="polite">Type or tap your answer, then check it.</p>
+    <div class="keypad">
+      ${[1, 2, 3, 4, 5, 6, 7, 8, 9].map(n => `<button class="tile key" data-act="key" data-v="${n}">${n}</button>`).join("")}
+      <button class="tile key alt" data-act="key" data-v="back" aria-label="Delete">⌫</button>
+      <button class="tile key" data-act="key" data-v="0">0</button>
+      <button class="tile key go" data-act="key" data-v="enter" aria-label="Check answer">✓</button>
+    </div>`;
+  updSprint(); tick();
+}
+function updSprint() {
+  const s = sprint, q = s.prob;
+  const eq = document.getElementById("eq");
+  eq.textContent = `${q.a} ${OPS[q.op]} ${q.b} =`;
+  eq.classList.toggle("long", eq.textContent.length > 11);
+  const ans = document.getElementById("ans");
+  ans.textContent = s.input || "?";
+  ans.classList.toggle("empty", !s.input);
+  document.getElementById("score").textContent = s.correct;
+  document.getElementById("pts").textContent = s.pts;
+}
+function tick() {
+  if (!sprint || screen !== "sprint") return;
+  const left = Math.max(0, Math.ceil((sprint.end - Date.now()) / 1000));
+  const el = document.getElementById("time");
+  if (el) { el.textContent = left; el.classList.toggle("low", left <= 10); }
+  if (left <= 0 && sprint.timer) endSprint();
+}
+function press(v) {
+  if (!sprint || screen !== "sprint" || !sprint.timer) return;
+  if (v === "back") sprint.input = sprint.input.slice(0, -1);
+  else if (v === "enter") return submit();
+  else if (sprint.input.length < 6) sprint.input = (sprint.input === "0" ? "" : sprint.input) + v;
+  updSprint();
+}
+function flash(cls) {
+  const el = document.getElementById("prob");
+  el.classList.remove("ok", "bad"); void el.offsetWidth; el.classList.add(cls);
+}
+function submit() {
+  const s = sprint, q = s.prob, p = me(), fb = document.getElementById("fb");
+  if (!s.input) return;
+  const st = p.stats[q.op];
+  if (Number(s.input) === q.ans) {
+    st.c++; s.correct++; s.streak++; s.best = Math.max(s.best, s.streak);
+    const bonus = s.streak % 5 === 0 ? 2 : 0;
+    s.pts += s.cfg.pts + bonus;
+    fb.textContent = bonus ? `${s.streak} in a row, +2 bonus` : "Correct";
+    flash("ok");
+  } else {
+    st.w++; s.wrong++; s.streak = 0;
+    fb.textContent = `Not quite: ${q.a} ${OPS[q.op]} ${q.b} = ${q.ans}`;
+    flash("bad");
+  }
+  nextProb(); updSprint();
+}
+function endSprint() {
+  const s = sprint, c = s.cfg, p = me();
+  clearInterval(s.timer); s.timer = null;
+  p.sprints++;
+  if (c.op) p.opsDone[c.op] = true;
+  const prev = p.best[c.key] || 0;
+  s.newBest = s.correct > prev && prev > 0;
+  p.best[c.key] = Math.max(prev, s.correct);
+  p.bestLabels = p.bestLabels || {}; p.bestLabels[c.key] = c.label;
+  p.maxSprint = Math.max(p.maxSprint, s.correct);
+  p.bestStreak = Math.max(p.bestStreak, s.best);
+  if (s.correct >= 10 && s.wrong === 0) p.perfect++;
+  if (c.mulFacts && s.correct >= 25) p.mulMaster = true;
+  addPoints(s.pts);
+  s.newStickers = checkStickers();
+  save(); go("results");
+}
+
+function renderResults() {
+  const s = sprint;
+  const stars = s.cfg.stars.filter(n => s.correct >= n).length;
+  const total = s.correct + s.wrong;
+  const acc = total ? Math.round((s.correct / total) * 100) + "%" : "–";
+  const nextStar = s.cfg.stars.find(n => s.correct < n);
+  app.innerHTML = header("home") + `
+    <h1>Time's up</h1>
+    <p class="muted">${esc(s.cfg.label)}</p>
+    <div class="tile result">
+      <div class="stars" role="img" aria-label="${stars} of 3 stars">${[1, 2, 3].map(i => `<span class="${i <= stars ? "lit" : ""}">★</span>`).join("")}</div>
+      <div class="big-num">${s.correct}</div>
+      <p>${s.newBest ? "correct, a new best" : "correct"}</p>
+      <p class="muted small">${nextStar ? `${nextStar - s.correct} more for the next star.` : "All three stars."}</p>
+      <div class="minis">
+        <div><b>${s.wrong}</b><span>missed</span></div>
+        <div><b>${acc}</b><span>accuracy</span></div>
+        <div><b>${s.best}</b><span>best streak</span></div>
+        <div><b>+${s.pts}</b><span>points</span></div>
+      </div>
+    </div>
+    ${s.newStickers.length ? `<div class="new-stickers"><h2 class="h2">New stickers</h2><div class="stickers">${s.newStickers.map(stickerHTML).join("")}</div></div>` : ""}
+    <div class="row-btns">
+      <button class="tile btn" data-go="setup">Change practice</button>
+      <button class="tile btn sun" data-act="start">Play again</button>
+    </div>`;
+}
+
+function newPuzzle(mode) {
+  const max = mode === "hard" ? 13 : 9;
+  let nums, sol = null;
+  for (let t = 0; t < 500 && !sol; t++) {
+    nums = [R(1, max), R(1, max), R(1, max), R(1, max)];
+    sol = solve(nums.map(n => ({ f: F(n), e: String(n) })));
+  }
+  if (!sol) { nums = [1, 2, 3, 4]; sol = solve(nums.map(n => ({ f: F(n), e: String(n) }))); }
+  m24 = { mode, cards: nums.map(n => ({ ...F(n), id: uid++ })), hist: [], sel: null, op: null,
+          hintUsed: false, showHint: false, solved: false, won: 0, msg: "", sol: sol.slice(1, -1) };
+}
+function renderM24() {
+  const m = m24, p = me();
+  app.innerHTML = header("home") + `
+    <div class="m24-head">
+      <h1>Make 24</h1>
+      <div class="seg mini">
+        <button class="tile ${m.mode === "easy" ? "on" : ""}" data-act="m24mode" data-v="easy" aria-pressed="${m.mode === "easy"}">Easy</button>
+        <button class="tile ${m.mode === "hard" ? "on" : ""}" data-act="m24mode" data-v="hard" aria-pressed="${m.mode === "hard"}">Hard</button>
+      </div>
+    </div>
+    <p class="muted">Tap a number, an operation, then another number. Use all four numbers to make 24.</p>
+    <div class="cards c${m.cards.length}">${m.cards.map((c, i) => `
+      <button class="tile card ${m.sel === i ? "sel" : ""} ${m.solved ? "win" : ""}" data-act="card" data-i="${i}" ${m.solved ? "disabled" : ""} aria-pressed="${m.sel === i}" aria-label="${fracText(c)}">${fracHTML(c)}</button>`).join("")}</div>
+    ${m.solved ? "" : `<div class="ops4">${["+", "−", "×", "÷"].map(o => `
+      <button class="tile op ${m.op === o ? "on" : ""}" data-act="op" data-v="${o}" aria-pressed="${m.op === o}">${o}</button>`).join("")}</div>`}
+    <p class="fb" aria-live="polite">${m.msg || "&nbsp;"}</p>
+    ${m.solved
+      ? `<div class="tile winbox"><div><b>24!</b> <span>+${m.won} points</span></div><button class="tile btn" data-act="m24next">Next puzzle</button></div>`
+      : `<div class="acts">
+          <button class="tile btn" data-act="undo" ${m.hist.length ? "" : "disabled"}>Undo</button>
+          <button class="tile btn" data-act="reset" ${m.hist.length ? "" : "disabled"}>Start over</button>
+          <button class="tile btn" data-act="hint">${m.showHint ? "Hide hint" : "Hint"}</button>
+          <button class="tile btn" data-act="m24next">Skip</button>
+        </div>`}
+    ${m.showHint && !m.solved ? `<p class="hint">One way: ${m.sol} = 24</p><p class="muted small center">Using a hint halves the points for this puzzle.</p>` : ""}
+    <p class="muted small center" style="margin-top:18px">Puzzles solved: ${p.m24}</p>`;
+}
+function combine(i, j, op) {
+  const m = m24, a = m.cards[i], b = m.cards[j];
+  if (op === "÷" && b.n === 0) { m.msg = "You can't divide by zero."; m.op = null; return; }
+  const r = op === "+" ? fadd(a, b) : op === "−" ? fsub(a, b) : op === "×" ? fmul(a, b) : fdiv(a, b);
+  m.hist.push(m.cards.map(c => ({ ...c })));
+  const id = uid++;
+  m.cards = m.cards.map((c, k) => (k === j ? { ...r, id } : c)).filter((_, k) => k !== i);
+  m.sel = m.cards.findIndex(c => c.id === id); m.op = null;
+  if (m.cards.length === 1) {
+    const c = m.cards[0];
+    if (c.n === 24 && c.d === 1) winPuzzle();
+    else { m.msg = `That makes ${fracText(c)}, not 24. Undo or start over.`; m.sel = null; }
+  }
+}
+function winPuzzle() {
+  const m = m24, p = me();
+  m.solved = true; m.sel = null;
+  const base = m.mode === "hard" ? 15 : 10;
+  m.won = m.hintUsed ? Math.ceil(base / 2) : base;
+  p.m24++;
+  if (m.mode === "hard" && !m.hintUsed) p.m24HardClean++;
+  addPoints(m.won);
+  const ns = checkStickers(); save();
+  if (ns.length) toast(`New sticker: ${ns.map(s => s.e + " " + s.name).join(", ")}`);
+}
+
+function stickerHTML(s) {
+  return `<div class="tile sticker"><span class="em" aria-hidden="true">${s.e}</span><b>${s.name}</b><small>${s.desc}</small></div>`;
+}
+function renderStickers() {
+  const p = me(), got = Object.keys(p.stickers).length;
+  app.innerHTML = header("home") + `
+    <h1>Stickers</h1>
+    <p class="muted">${got} of ${STICKERS.length} collected.${got < STICKERS.length ? " Dashed ones are still out there." : ""}</p>
+    <div class="stickers">${STICKERS.map(s => p.stickers[s.id] ? stickerHTML(s)
+      : `<div class="tile sticker locked"><span class="em" aria-hidden="true">${s.e}</span><b>${s.name}</b><small>${s.desc}</small></div>`).join("")}</div>`;
+}
+
+function renderStats() {
+  const p = me();
+  const rows = ["add", "sub", "mul", "div"].map(o => {
+    const s = p.stats[o], n = s.c + s.w;
+    return `<tr><th scope="row">${OPS[o]} ${NAMES[o]}</th><td>${s.c}</td><td>${s.w}</td><td>${n ? Math.round((s.c / n) * 100) + "%" : "–"}</td></tr>`;
+  }).join("");
+  const bests = Object.entries(p.best).filter(([, v]) => v > 0)
+    .sort((a, b) => b[1] - a[1])
+    .map(([k, v]) => { const [o, l] = k.split("-"); const label = (p.bestLabels || {})[k] || (NAMES[o] ? `${NAMES[o]}, level ${l}` : k); return `<li><span>${esc(label)}</span><b>${v}</b></li>`; }).join("");
+  app.innerHTML = header("home") + `
+    <h1>Stats</h1>
+    <section class="tile panel"><div class="totals">
+      <div><b>${p.points.toLocaleString()}</b><span>total points</span></div>
+      <div><b>${p.sprints}</b><span>sprints played</span></div>
+      <div><b>${p.m24}</b><span>Make 24 solved</span></div>
+      <div><b>${p.bestStreak}</b><span>longest streak</span></div>
+    </div></section>
+    <section class="tile panel"><h2>Accuracy</h2>
+      <table><thead><tr><th scope="col">Operation</th><th scope="col">Right</th><th scope="col">Missed</th><th scope="col">Accuracy</th></tr></thead><tbody>${rows}</tbody></table>
+    </section>
+    <section class="tile panel"><h2>Best sprints</h2>
+      ${bests ? `<ul class="bests">${bests}</ul>` : `<p class="muted">Finish a sprint and your best scores show up here.</p>`}
+    </section>`;
+}
+
+/* ---------- Events ---------- */
+const actions = {
+  pick: t => { store.current = t.dataset.name; save(); go("home"); },
+  delp: t => {
+    const n = t.dataset.name;
+    if (!confirm(`Remove ${n} and all of their progress?`)) return;
+    delete store.profiles[n]; if (store.current === n) store.current = null; save(); render();
+  },
+  setmode: t => { S().mode = t.dataset.v; save(); renderSetup(); },
+  setop: t => { S().op = t.dataset.v; save(); renderSetup(); },
+  setlvl: t => { S().lvl = +t.dataset.v; save(); renderSetup(); },
+  setgrade: t => { const s = S(); s.grade = +t.dataset.v; s.skill = firstSkill(s.grade); save(); renderSetup(); },
+  setskill: t => { S().skill = t.dataset.v; save(); renderSetup(); },
+  table: t => {
+    const s = S(), v = t.dataset.v;
+    if (v === "all") s.tables = [];
+    else { const n = +v; s.tables = s.tables.includes(n) ? s.tables.filter(x => x !== n) : [...s.tables, n]; }
+    save(); renderSetup();
+  },
+  start: () => startSprint(),
+  quit: () => { save(); go("setup"); },
+  key: t => press(t.dataset.v),
+  m24open: () => { if (!m24 || m24.solved) newPuzzle(m24 ? m24.mode : "easy"); go("m24"); },
+  m24mode: t => { newPuzzle(t.dataset.v); renderM24(); },
+  m24next: () => { newPuzzle(m24.mode); renderM24(); },
+  card: t => {
+    const m = m24, i = +t.dataset.i; m.msg = "";
+    if (m.sel === null) m.sel = i;
+    else if (m.sel === i) { m.sel = null; m.op = null; }
+    else if (m.op === null) m.sel = i;
+    else combine(m.sel, i, m.op);
+    renderM24();
+  },
+  op: t => {
+    const m = m24;
+    if (m.sel === null) m.msg = "Pick a number first.";
+    else { m.op = m.op === t.dataset.v ? null : t.dataset.v; m.msg = ""; }
+    renderM24();
+  },
+  undo: () => { const m = m24; if (!m.hist.length) return; m.cards = m.hist.pop(); m.sel = null; m.op = null; m.msg = ""; renderM24(); },
+  reset: () => { const m = m24; if (!m.hist.length) return; m.cards = m.hist[0]; m.hist = []; m.sel = null; m.op = null; m.msg = ""; renderM24(); },
+  hint: () => { const m = m24; m.showHint = !m.showHint; if (m.showHint) m.hintUsed = true; renderM24(); }
+};
+app.addEventListener("click", e => {
+  const t = e.target.closest("[data-go],[data-act]");
+  if (!t || t.disabled) return;
+  if (t.dataset.go) return go(t.dataset.go);
+  const fn = actions[t.dataset.act]; if (fn) fn(t, e);
+});
+document.addEventListener("keydown", e => {
+  if (screen !== "sprint" || !sprint || !sprint.timer) return;
+  if (/^[0-9]$/.test(e.key)) { press(e.key); e.preventDefault(); }
+  else if (e.key === "Backspace") { press("back"); e.preventDefault(); }
+  else if (e.key === "Enter") { press("enter"); e.preventDefault(); }
+});
+
+render();
+</script>
+</body>
+</html>
